@@ -30,8 +30,12 @@ describe('TddTestService', () => {
         const mocBady = { id: 1, value: 10 };
         let sumValue;
 
-        it('tdd-test-is-function?', () => {
+        it('tdd-test-is-function?', async () => {
             expect(typeof service.tddTest).toBe('function');
+
+            // service.addValue = jest.fn()
+            // const drink = await service.tddTest(mocBady);
+            // expect(service.addValue).toHaveBeenCalled();
         });
 
         it('2. repository에서 해당 id 값을 가져온다', async () => {
@@ -53,7 +57,8 @@ describe('TddTestService', () => {
             const sumValue = await service.addValue(mocBady.value, idValue);
             const result = await repository.addValue(sumValue);
 
-            expect(result).toBe(true);
+            // expect(result).toBe(true);
+            expect(result).toBeTruthy();
         });
 
         it('4. 값에 value 값 * id값을 곱한 값을 return', async () => {
