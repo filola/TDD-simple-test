@@ -17,6 +17,8 @@ describe('TddTestController', () => {
     });
 
     describe('addApp', () => {
-        it('', async () => {});
+        it('더하기 테스트', async () => {
+            const;
+        });
     });
 });

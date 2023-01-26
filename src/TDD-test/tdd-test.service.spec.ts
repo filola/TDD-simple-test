@@ -1,20 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TddTestRepository } from './tdd-test.repository';
+import { ITddTestRepository } from './tdd-test.repository.interface';
 import { TddTestService } from './tdd-test.service';
 
 // const mocData: mocDTO = { id: 1 , value: 10}
+class mockTddTestRepository implements ITddTestRepository {
+    async getValue(id: number) {
+        return id + 1;
+    }
 
+    async addValue(value: number) {
+        return true;
+    }
+}
 describe('TddTestService', () => {
     let service: TddTestService;
-    let repository: TddTestRepository;
+    let repository: mockTddTestRepository;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [TddTestService, TddTestRepository],
+            providers: [
+                TddTestService,
+                {
+                    provide: ITddTestRepository,
+                    useClass: mockTddTestRepository,
+                },
+            ],
         }).compile();
 
         service = module.get<TddTestService>(TddTestService);
-        repository = module.get<TddTestRepository>(TddTestRepository);
+        repository = module.get<mockTddTestRepository>(ITddTestRepository);
     });
 
     it('should be defined', () => {
@@ -26,53 +41,61 @@ describe('TddTestService', () => {
     // 3. value값과 합을 구해서 DB저장하고
     // 4. 값에 value 값 * id값을 곱한 값을 return
 
-    describe('tdd-test', () => {
-        const mocBady = { id: 1, value: 10 };
-        let sumValue;
+    describe('tdd-test.ver2(리팩터링을 고려)', () => {
+        const mocBody = { id: 1, value: 10 };
 
-        it('tdd-test-is-function?', async () => {
-            expect(typeof service.tddTest).toBe('function');
-
-            // service.addValue = jest.fn()
-            // const drink = await service.tddTest(mocBady);
-            // expect(service.addValue).toHaveBeenCalled();
-        });
-
-        it('2. repository에서 해당 id 값을 가져온다', async () => {
-            const result = await repository.getValue(mocBady.id);
-
-            expect(result).toBe(2);
-        });
-
-        it('3-1. value값과 합을 구한다', async () => {
-            // const result = mocBady.value + (await repository.getValue(mocBady.id));
-            const idValue = await repository.getValue(mocBady.id);
-            const result = await service.addValue(mocBady.value, idValue);
-
-            expect(result).toBe(12);
-        });
-
-        it('3-2. DB 저장을 한다', async () => {
-            const idValue = await repository.getValue(mocBady.id);
-            const sumValue = await service.addValue(mocBady.value, idValue);
-            const result = await repository.addValue(sumValue);
-
-            // expect(result).toBe(true);
-            expect(result).toBeTruthy();
-        });
-
-        it('4. 값에 value 값 * id값을 곱한 값을 return', async () => {
-            const idValue = await repository.getValue(mocBady.id);
-            const sumValue = await service.addValue(mocBady.value, idValue);
-
-            const result = await service.multiply(sumValue, mocBady.value, idValue);
-
+        it('success', async () => {
+            const result = await service.tddTest2(mocBody);
             expect(result).toBe(240);
         });
 
-        it('tdd test result = 240', async () => {
-            const result = await service.tddTest(mocBady);
-            expect(result).toBe(240);
-        });
+        // describe('tdd-test', () => {
+        //     const mocBady = { id: 1, value: 10 };
+        //     let sumValue;
+
+        //     it('tdd-test-is-function?', async () => {
+        //         expect(typeof service.tddTest).toBe('function');
+
+        //         // service.addValue = jest.fn()
+        //         // const drink = await service.tddTest(mocBady);
+        //         // expect(service.addValue).toHaveBeenCalled();
+        //     });
+
+        //     it('2. repository에서 해당 id 값을 가져온다', async () => {
+        //         const result = await repository.getValue(mocBady.id);
+
+        //         expect(result).toBe(2);
+        //     });
+
+        //     it('3-1. value값과 합을 구한다', async () => {
+        //         // const result = mocBady.value + (await repository.getValue(mocBady.id));
+        //         const idValue = await repository.getValue(mocBady.id);
+        //         const result = await service.addValue(mocBady.value, idValue);
+
+        //         expect(result).toBe(12);
+        //     });
+
+        //     it('3-2. DB 저장을 한다', async () => {
+        //         const idValue = await repository.getValue(mocBady.id);
+        //         const sumValue = await service.addValue(mocBady.value, idValue);
+        //         const result = await repository.addValue(sumValue);
+
+        //         // expect(result).toBe(true);
+        //         expect(result).toBeTruthy();
+        //     });
+
+        //     it('4. 값에 value 값 * id값을 곱한 값을 return', async () => {
+        //         const idValue = await repository.getValue(mocBady.id);
+        //         const sumValue = await service.addValue(mocBady.value, idValue);
+
+        //         const result = await service.multiply(sumValue, mocBady.value, idValue);
+
+        //         expect(result).toBe(240);
+        //     });
+
+        //     it('tdd test result = 240', async () => {
+        //         const result = await service.tddTest(mocBady);
+        //         expect(result).toBe(240);
+        //     });
     });
 });

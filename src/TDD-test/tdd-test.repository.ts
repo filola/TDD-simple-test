@@ -1,4 +1,6 @@
-export class TddTestRepository {
+import { ITddTestRepository } from './tdd-test.repository.interface';
+
+export class TddTestRepository implements ITddTestRepository {
     async getValue(id: number) {
         return id + 1;
     }
